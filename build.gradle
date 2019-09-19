@@ -1,0 +1,91 @@
+buildscript {
+	repositories {
+		mavenCentral()
+		jcenter()
+	}
+	dependencies {
+		classpath 'pl.allegro.tech.build:axion-release-plugin:1.10.+'
+		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
+	}
+}
+
+apply plugin: 'pl.allegro.tech.build.axion-release'
+
+group = 'ascelion.public'
+version = scmVersion.version
+
+allprojects {
+	apply plugin: 'eclipse'
+
+	repositories {
+		jcenter()
+	}
+
+	defaultTasks 'clean', 'build'
+}
+
+subprojects { sub ->
+	group = rootProject.group
+	version = rootProject.version
+
+	apply plugin: 'java'
+
+	sourceCompatibility = '1.8'
+	targetCompatibility = '1.8'
+
+	eclipse.project.name = "${rootProject.name}-$name"
+
+	tasks.withType( AbstractArchiveTask ) {
+		archiveVersion = ''
+	}
+
+	tasks.withType( Jar ) {
+		manifest {
+			attributes(
+				'Built-By'       : 'ascelion',
+				'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+				'Build-Branch'   : scmVersion.scmPosition.branch,
+				'Build-Commit'   : scmVersion.scmPosition.revision,
+				'Build-Revision' : "${scmVersion.version}-${scmVersion.scmPosition.shortRevision}",
+				'Created-By'     : "Gradle ${gradle.gradleVersion}",
+				'Build-Jdk'      : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+				'Build-OS'       : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
+			)
+		}
+	}
+
+	configurations {
+		flyway5
+		flyway6
+	}
+
+	dependencies {
+		flyway5 'org.flywaydb:flyway-core:5.2.4'
+		flyway6 'org.flywaydb:flyway-core:6.0.3'
+
+		constraints {
+			implementation 'javax.enterprise:cdi-api:1.2'
+			implementation 'jakarta.enterprise:jakarta.enterprise.cdi-api:2.0.2'
+
+			implementation 'org.slf4j:slf4j-api:1.7.28'
+			implementation 'ch.qos.logback:logback-classic:1.2.3'
+			implementation 'com.opencsv:opencsv:4.6'
+
+			implementation 'com.h2database:h2:1.4.199'
+
+			implementation 'ascelion.public:cdi-utils:0.1.+'
+
+			testImplementation 'junit:junit:4.12'
+			testImplementation 'org.hamcrest:hamcrest-core:1.3'
+			testImplementation 'org.hamcrest:hamcrest-library:1.3'
+		}
+	}
+
+	apply from: rootProject.file('lombok.gradle')
+
+	task cleanBin( type: Delete ) {
+		delete file( 'bin' )
+	}
+	
+	clean.dependsOn cleanBin
+}

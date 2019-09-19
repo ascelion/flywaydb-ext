@@ -1,0 +1,13 @@
+
+dependencies {
+	implementation 'com.opencsv:opencsv'
+
+	implementation configurations.flyway5
+
+	testImplementation 'junit:junit'
+	testImplementation 'org.hamcrest:hamcrest-core'
+	testImplementation 'org.hamcrest:hamcrest-library'
+
+	testRuntimeOnly 'com.h2database:h2'
+	testRuntimeOnly 'ch.qos.logback:logback-classic'
+}

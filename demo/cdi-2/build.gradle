@@ -1,0 +1,16 @@
+
+dependencies {
+	implementation project( ':api' )
+	implementation 'org.slf4j:slf4j-api'
+
+	implementation configurations.flyway6
+	runtimeOnly project( ':util6' )
+
+	runtimeOnly project( ':cdi' )
+	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'ch.qos.logback:logback-classic'
+
+	compileOnly 'jakarta.enterprise:jakarta.enterprise.cdi-api'
+
+	runtimeOnly 'org.jboss.weld.se:weld-se-core:3.1.2.Final'
+}

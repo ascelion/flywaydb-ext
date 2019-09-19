@@ -1,0 +1,15 @@
+
+dependencies {
+	implementation project( ':api' )
+	implementation 'ascelion.public:cdi-utils'
+
+	compileOnly configurations.flyway5
+
+	implementation 'org.slf4j:slf4j-api'
+
+	compileOnly 'javax.enterprise:cdi-api'
+
+	testImplementation 'junit:junit'
+	testImplementation 'org.hamcrest:hamcrest-core'
+	testImplementation 'org.hamcrest:hamcrest-library'
+}
