@@ -73,7 +73,7 @@ subprojects { sub ->
 
 			implementation 'com.h2database:h2:1.4.199'
 
-			implementation 'ascelion.public:cdi-utils:0.1.+'
+			implementation 'ascelion.public:cdi-utils:0.1.0'
 
 			testImplementation 'junit:junit:4.12'
 			testImplementation 'org.hamcrest:hamcrest-core:1.3'

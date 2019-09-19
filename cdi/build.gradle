@@ -13,3 +13,6 @@ dependencies {
 	testImplementation 'org.hamcrest:hamcrest-core'
 	testImplementation 'org.hamcrest:hamcrest-library'
 }
+
+apply from: rootProject.file( 'publish.gradle' )
+
