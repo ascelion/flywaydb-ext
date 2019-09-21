@@ -11,7 +11,7 @@ buildscript {
 
 apply plugin: 'pl.allegro.tech.build.axion-release'
 
-group = 'ascelion.public'
+group = 'ascelion.flywaydb'
 version = scmVersion.version
 
 task clean {

@@ -27,7 +27,7 @@ import org.flywaydb.core.api.resolver.MigrationResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FlywayCdiExtension implements Extension {
+public final class FlywayCdiExtension implements Extension {
 	static private final Logger L = LoggerFactory.getLogger(FlywayCdiExtension.class);
 
 	static Optional<FlywayMigration> flywayMigrationAnnotation(Bean<?> bean) {

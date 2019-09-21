@@ -1,8 +1,9 @@
 
-dependencies {
-	implementation project( ':flywaydb-ext-shared' )
+apply plugin: 'java-library'
 
-	implementation configurations.flyway5
+dependencies {
+	api project( ':flywaydb-ext-shared' )
+	api configurations.flyway5
 
 	testImplementation 'junit:junit'
 	testImplementation 'org.hamcrest:hamcrest-core'

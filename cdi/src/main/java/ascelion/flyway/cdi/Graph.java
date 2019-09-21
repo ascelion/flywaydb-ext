@@ -14,7 +14,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
-class Graph<T, V extends Graph.Vertex<T>> {
+final class Graph<T, V extends Graph.Vertex<T>> {
 
 	@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 	static class CycleException extends RuntimeException {
