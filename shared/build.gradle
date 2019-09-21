@@ -1,0 +1,11 @@
+
+dependencies {
+	compileOnly configurations.flyway6
+}
+
+dependencies {
+	implementation 'com.opencsv:opencsv'
+}
+
+apply from: rootProject.file( 'publish.gradle' )
+

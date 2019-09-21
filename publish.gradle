@@ -39,8 +39,6 @@ publishing {
 		maven( MavenPublication ) {
 			from components.java
 
-			artifactId "${rootProject.name}-${project.name}"
-
 			artifact sourcesJar
 			artifact javadocJar
 

@@ -2,3 +2,6 @@
 dependencies {
 	compileOnly configurations.flyway5
 }
+
+apply from: rootProject.file( 'publish.gradle' )
+

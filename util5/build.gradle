@@ -1,6 +1,6 @@
 
 dependencies {
-	implementation 'com.opencsv:opencsv'
+	implementation project( ':flywaydb-ext-shared' )
 
 	implementation configurations.flyway5
 

@@ -1,0 +1,10 @@
+CREATE TABLE employees
+(
+	id BIGINT SERIAL PRIMARY KEY,
+	first_name VARCHAR(80) NOT NULL,
+	last_name VARCHAR(80) NOT NULL,
+	hire_date DATE NOT NULL,
+	hourly_rate DECIMAL(6, 2) NOT NULL,
+	user_name VARCHAR(80) NOT NULL UNIQUE,
+	updated TIMESTAMP NOT NULL DEFAULT now()
+)

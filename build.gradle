@@ -14,12 +14,21 @@ apply plugin: 'pl.allegro.tech.build.axion-release'
 group = 'ascelion.public'
 version = scmVersion.version
 
+task clean {
+}
+
 allprojects {
 	apply plugin: 'eclipse'
 
 	repositories {
 		jcenter()
 	}
+
+	task 'clean-ext'( type: Delete ) {
+		delete 'bin', 'target'
+	}
+
+	clean.dependsOn 'clean-ext'
 
 	defaultTasks 'clean', 'build'
 }
@@ -32,8 +41,6 @@ subprojects { sub ->
 
 	sourceCompatibility = '1.8'
 	targetCompatibility = '1.8'
-
-	eclipse.project.name = "${rootProject.name}-$name"
 
 	tasks.withType( AbstractArchiveTask ) {
 		archiveVersion = ''
@@ -82,10 +89,4 @@ subprojects { sub ->
 	}
 
 	apply from: rootProject.file('lombok.gradle')
-
-	task cleanBin( type: Delete ) {
-		delete file( 'bin' )
-	}
-	
-	clean.dependsOn cleanBin
 }

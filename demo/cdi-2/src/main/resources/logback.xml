@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false">
-	<property name="LOG_PATH" value="${LOG_PATH:-${user.dir}}" />
+	<property name="LOG_PATH" value="${LOG_PATH:-${user.dir}}/build" />
 	<property name="LOG_NAME" value="${LOG_NAME:-demo}" />
 	<property name="LOG_FILE" value="${LOG_FILE:-${LOG_NAME}.log}" />
 

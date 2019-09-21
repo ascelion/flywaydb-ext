@@ -9,8 +9,8 @@ import org.flywaydb.core.api.executor.Context;
 import org.flywaydb.core.api.executor.MigrationExecutor;
 
 @RequiredArgsConstructor
-final class CSVMigrationExecutor implements MigrationExecutor {
-	private final CSVResolvedMigration migration;
+public final class CSVMigrationExecutor implements MigrationExecutor {
+	private final CSVResolvedMigrationBase migration;
 
 	@Override
 	public void execute(Context context) throws SQLException {

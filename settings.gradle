@@ -7,12 +7,13 @@ include ':demo:cdi-1'
 include ':demo:cdi-2'
 //include ':demo:spring4'
 //include ':demo:spring5'
+include ':shared'
 include ':util5'
 include ':util6'
 
 def renameChildren( ProjectDescriptor desc ) {
 	desc.children.each { child ->
-		child.name = "${child.path.substring(1).replace(':', '-')}"
+		child.name = "${rootProject.name}-${child.path.substring(1).replace(':', '-')}"
 
 		renameChildren child
 	}

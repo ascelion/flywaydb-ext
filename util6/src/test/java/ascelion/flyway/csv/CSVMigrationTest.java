@@ -30,7 +30,7 @@ public class CSVMigrationTest {
 		assertThat(count, equalTo(2));
 
 		final ResultSet results = db.createStatement()
-				.executeQuery("SELECT * FROM USERS");
+				.executeQuery("SELECT * FROM EMPLOYEES");
 
 		assertThat(results.next(), is(true));
 		assertThat(results.next(), is(true));
