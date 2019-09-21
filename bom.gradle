@@ -1,0 +1,38 @@
+apply plugin: 'maven-publish'
+
+publishing {
+	publications {
+		maven( MavenPublication ) {
+			pom {
+				name = artifactId
+				url = "https://github.com/ascelion/${publishName}"
+				scm {
+					url = "https://github.com/ascelion/${publishName}"
+					connection = "https://github.com/ascelion/${publishName}.git"
+					developerConnection = "git@github.com:ascelion/${publishName}.git"
+				}
+				licenses {
+					license {
+						name = 'GNU Affero General Public License version 3'
+						url = 'https://opensource.org/licenses/AGPL-3.0'
+						distribution = 'repo'
+					}
+				}
+				withXml {
+					def xml = it.asNode()
+					def dm = xml.appendNode( 'dependencyManagement' ).appendNode( 'dependencies' )
+
+					rootProject.subprojects { sub ->
+						plugins.withType( MavenPublishPlugin ) {
+							def dep = dm.appendNode 'dependency'
+
+							dep.appendNode 'groupId', sub.group
+							dep.appendNode 'artifactId', sub.name
+							dep.appendNode 'version', sub.version
+						}
+					}
+				}
+			}
+		}
+	}
+}

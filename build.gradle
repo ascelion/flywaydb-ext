@@ -11,6 +11,10 @@ buildscript {
 
 apply plugin: 'pl.allegro.tech.build.axion-release'
 
+scmVersion {
+    ignoreUncommittedChanges = false
+}
+
 group = 'ascelion.flywaydb'
 version = scmVersion.version
 
@@ -22,6 +26,10 @@ allprojects {
 
 	repositories {
 		jcenter()
+	}
+
+	ext {
+		publishName = rootProject.name
 	}
 
 	task 'clean-ext'( type: Delete ) {
@@ -90,3 +98,5 @@ subprojects { sub ->
 
 	apply from: rootProject.file('lombok.gradle')
 }
+
+apply from: 'bom.gradle'

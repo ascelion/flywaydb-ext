@@ -1,6 +1,3 @@
-
-def publishName = 'flywaydb-ext'
-
 apply plugin: 'maven-publish'
 
 def doPublish  = project.hasProperty( 'doPublish' )
@@ -59,7 +56,6 @@ publishing {
 				}
 				withXml {
 					def xml = it.asNode();
-
 					def dm = xml.dependencyManagement.dependencies
 					def dd = xml.dependencies
 
