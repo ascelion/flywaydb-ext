@@ -1,8 +1,6 @@
 apply plugin: 'maven-publish'
 
 def doPublish  = project.hasProperty( 'doPublish' )
-def isSnapshot = version.endsWith( '-SNAPSHOT' )
-def isRelease  = !isSnapshot
 
 def signKey    = "${publishName}.sign.keyId"
 def signSecret = "${publishName}.sign.keySecret"
@@ -97,31 +95,5 @@ if( gradle.hasProperty( signKey ) ) {
 	signing {
 		useGpgCmd()
 		sign publishing.publications.maven
-	}
-}
-
-if( isRelease && doPublish && gradle.hasProperty( bintrayUSR ) ) {
-	apply plugin: 'com.jfrog.bintray'
-
-	bintray {
-		user = gext[bintrayUSR]
-		key = gradle.decryptPassword( gext[bintrayPWD] )
-
-		publications = [ 'maven' ]
-
-		pkg {
-			repo = 'repo'
-			userOrg = 'ascelion'
-			name = publishName
-			licenses = [ 'AGPL-3.0' ]
-			vcsUrl = "https://github.com/ascelion/${publishName}"
-			version {
-				name = project.version
-
-				gpg {
-					sign = true
-				}
-			}
-		}
 	}
 }

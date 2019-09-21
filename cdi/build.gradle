@@ -19,4 +19,5 @@ dependencies {
 }
 
 apply from: rootProject.file( 'publish.gradle' )
+apply from: rootProject.file( 'bintray.gradle' )
 

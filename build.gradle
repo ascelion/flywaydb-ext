@@ -24,12 +24,15 @@ task clean {
 allprojects {
 	apply plugin: 'eclipse'
 
-	repositories {
-		jcenter()
-	}
-
 	ext {
 		publishName = rootProject.name
+
+		isSnapshot = version.endsWith( '-SNAPSHOT' )
+		isRelease  = !isSnapshot
+	}
+
+	repositories {
+		jcenter()
 	}
 
 	task 'clean-ext'( type: Delete ) {
@@ -99,4 +102,7 @@ subprojects { sub ->
 	apply from: rootProject.file('lombok.gradle')
 }
 
+apply plugin: 'maven-publish'
+
 apply from: 'bom.gradle'
+apply from: 'bintray.gradle'
