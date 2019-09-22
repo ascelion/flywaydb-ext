@@ -1,8 +1,10 @@
 
 dependencies {
 	implementation project( ':flywaydb-ext-api' )
+	implementation project( ':flywaydb-ext-util6' )
 
-	runtimeOnly project( ':flywaydb-ext-util6' )
+	implementation 'org.slf4j:slf4j-api'
+
 	runtimeOnly project( ':flywaydb-ext-cdi' )
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'ch.qos.logback:logback-classic'
