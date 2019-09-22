@@ -40,10 +40,10 @@ public abstract class CSVMigrationResolverBase<R extends Resource> implements Mi
 		final String desc;
 
 		if (sepIx < 0) {
-			table = right;
+			table = right.replace(' ', '_');
 			desc = "IMPORT TABLE " + table;
 		} else {
-			table = right.substring(0, sepIx);
+			table = right.substring(0, sepIx).replace(' ', '_');
 			desc = right.substring(sepIx + 1);
 		}
 
