@@ -1,5 +1,7 @@
 package ascelion.flyway.demo.cdi2;
 
+import java.util.UUID;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
@@ -7,15 +9,22 @@ import javax.inject.Singleton;
 
 import ascelion.flyway.api.FlywayMigration;
 
+import static java.util.UUID.randomUUID;
+
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.configuration.Configuration;
 
 @Dependent
 public class FlywayInit {
 
+	static public final String INJECTED_VALUE = "injectedValue";
+
+	/**
+	 * Producer for something to be injected in the CDI migration class.
+	 */
 	@Produces
-	@Named("database.importFile")
-	String importFile = "data.csv";
+	@Named(INJECTED_VALUE)
+	UUID injectedValue = randomUUID();
 
 	@Produces
 	@Singleton

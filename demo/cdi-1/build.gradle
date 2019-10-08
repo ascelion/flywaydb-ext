@@ -1,13 +1,19 @@
+apply plugin: 'application'
+
+mainClassName = 'ascelion.flyway.demo.cdi1.Demo'
 
 dependencies {
+	implementation 'javax.annotation:javax.annotation-api'
+	implementation 'javax.enterprise:cdi-api'
+
 	implementation project( ':flywaydb-ext-api' )
 	implementation project( ':flywaydb-ext-util5' )
+
+	implementation 'org.slf4j:slf4j-api'
 
 	runtimeOnly project( ':flywaydb-ext-cdi' )
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'ch.qos.logback:logback-classic'
-
-	compileOnly 'javax.enterprise:cdi-api'
 
 	implementation 'org.jboss.weld.se:weld-se:2.4.6.Final'
 }

@@ -36,7 +36,9 @@ allprojects {
 	}
 
 	task 'clean-ext'( type: Delete ) {
-		delete 'bin', 'target'
+		doLast {
+			delete 'bin', 'target'
+		}
 	}
 
 	clean.dependsOn 'clean-ext'
@@ -52,6 +54,12 @@ subprojects { sub ->
 
 	sourceCompatibility = '1.8'
 	targetCompatibility = '1.8'
+
+	sourceSets {
+		all {
+			output.resourcesDir = output.classesDirs[0]
+		}
+	}
 
 	tasks.withType( AbstractArchiveTask ) {
 		archiveVersion = ''
@@ -84,6 +92,8 @@ subprojects { sub ->
 		constraints {
 			implementation 'javax.enterprise:cdi-api:1.2'
 			implementation 'jakarta.enterprise:jakarta.enterprise.cdi-api:2.0.2'
+
+			implementation 'javax.annotation:javax.annotation-api:1.3'
 
 			implementation 'org.slf4j:slf4j-api:1.7.28'
 			implementation 'ch.qos.logback:logback-classic:1.2.3'

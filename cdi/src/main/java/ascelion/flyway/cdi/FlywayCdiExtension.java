@@ -27,6 +27,7 @@ import org.flywaydb.core.api.resolver.MigrationResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("unchecked")
 public final class FlywayCdiExtension implements Extension {
 	static private final Logger L = LoggerFactory.getLogger(FlywayCdiExtension.class);
 
@@ -39,16 +40,16 @@ public final class FlywayCdiExtension implements Extension {
 
 	static class CfBeanInfo extends Graph.Vertex<String> {
 		static CfBeanInfo create(Bean<?> bean) {
-			return new CfBeanInfo((Bean<Configuration>) bean, flywayMigrationAnnotation(bean).get());
+			return new CfBeanInfo(bean, flywayMigrationAnnotation(bean).get());
 		}
 
 		private final Bean<Configuration> bean;
 		private final FlywayMigration annotation;
 
-		private CfBeanInfo(Bean<Configuration> bean, FlywayMigration annotation) {
+		private CfBeanInfo(Bean<?> bean, FlywayMigration annotation) {
 			super(annotation.name(), annotation.dependsOn());
 
-			this.bean = bean;
+			this.bean = (Bean<Configuration>) bean;
 			this.annotation = annotation;
 		}
 	}
@@ -124,7 +125,8 @@ public final class FlywayCdiExtension implements Extension {
 
 	private void addCSV(final List<MigrationResolver> resolvers) {
 		try {
-			final Class<?> cls = currentThread().getContextClassLoader().loadClass("ascelion.flyway.csv.CSVMigrationResolver");
+			final Class<?> cls = currentThread().getContextClassLoader()
+					.loadClass("ascelion.flyway.csv.CSVMigrationResolver");
 
 			resolvers.add((MigrationResolver) cls.newInstance());
 		} catch (final NoClassDefFoundError | ClassNotFoundException e) {

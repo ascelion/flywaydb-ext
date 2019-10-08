@@ -48,6 +48,7 @@ final class CdiMigrationResolver implements MigrationResolver {
 				.collect(toList());
 	}
 
+	@SuppressWarnings("unchecked")
 	private JavaMigration createMigration(Bean<?> bean) {
 		return ((Bean<JavaMigration>) bean).create(this.bm.createCreationalContext(null));
 	}

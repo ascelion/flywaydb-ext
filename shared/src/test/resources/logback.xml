@@ -22,6 +22,7 @@
 	</appender>
 
 	<logger name="ascelion.flyway" level="ALL" />
+	<logger name="org.flywaydb" level="INFO" />
 
 	<root level="INFO">
 		<appender-ref ref="FILE" />

@@ -1,6 +1,8 @@
 package ascelion.flyway.csv;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.Optional.ofNullable;
 
@@ -11,8 +13,11 @@ import org.flywaydb.core.internal.resource.LoadableResource;
 
 final class CSVResolvedMigration extends CSVResolvedMigrationBase<LoadableResource> {
 
-	CSVResolvedMigration(LoadableResource resource, MigrationVersion version, String table, String description) {
-		super(resource, version, table, description, resource.checksum());
+	CSVResolvedMigration(Map<String, List<String>> references,
+			LoadableResource resource, MigrationVersion version,
+			String table, String description) {
+
+		super(references, resource, version, table, description, resource.checksum());
 	}
 
 	@Override

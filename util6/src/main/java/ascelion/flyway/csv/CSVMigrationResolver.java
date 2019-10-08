@@ -20,7 +20,7 @@ public final class CSVMigrationResolver extends CSVMigrationResolverBase<Loadabl
 
 	@Override
 	protected CSVResolvedMigrationBase<LoadableResource> newMigration(LoadableResource res, MigrationVersion version, String table, String desc) {
-		return new CSVResolvedMigration(res, version, table, desc);
+		return new CSVResolvedMigration(this.references, res, version, table, desc);
 	}
 
 }

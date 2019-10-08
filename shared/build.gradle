@@ -12,3 +12,23 @@ dependencies {
 apply from: rootProject.file( 'publish.gradle' )
 apply from: rootProject.file( 'bintray.gradle' )
 
+configurations {
+	test {
+		extendsFrom testRuntimeClasspath
+	}
+}
+
+dependencies {
+	implementation 'org.slf4j:slf4j-api'
+
+	testImplementation 'junit:junit'
+	testImplementation 'org.hamcrest:hamcrest-core'
+	testImplementation 'org.hamcrest:hamcrest-library'
+
+	testRuntimeOnly 'com.h2database:h2'
+	testRuntimeOnly 'ch.qos.logback:logback-classic'
+	
+	testCompileOnly configurations.flyway5
+	
+	test sourceSets.test.output
+}

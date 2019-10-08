@@ -1,5 +1,10 @@
+apply plugin: 'application'
+
+mainClassName = 'ascelion.flyway.demo.cdi2.Demo'
 
 dependencies {
+	implementation 'jakarta.enterprise:jakarta.enterprise.cdi-api'
+
 	implementation project( ':flywaydb-ext-api' )
 	implementation project( ':flywaydb-ext-util6' )
 
@@ -9,7 +14,6 @@ dependencies {
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'ch.qos.logback:logback-classic'
 
-	compileOnly 'jakarta.enterprise:jakarta.enterprise.cdi-api'
 
 	runtimeOnly 'org.jboss.weld.se:weld-se-core:3.1.2.Final'
 }

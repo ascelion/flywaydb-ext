@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
+@SuppressWarnings("unchecked")
 final class Graph<T, V extends Graph.Vertex<T>> {
 
 	@RequiredArgsConstructor(access = AccessLevel.PACKAGE)

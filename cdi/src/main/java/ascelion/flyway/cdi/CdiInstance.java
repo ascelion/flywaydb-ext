@@ -10,6 +10,7 @@ import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
+@SuppressWarnings("unchecked")
 class CdiInstance<T> {
 	private final CreationalContext<T> context;
 	private final T instance;

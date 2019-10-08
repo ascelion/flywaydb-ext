@@ -1,6 +1,9 @@
 package ascelion.flyway.csv;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
@@ -15,6 +18,8 @@ import org.flywaydb.core.internal.util.Pair;
 
 public abstract class CSVMigrationResolverBase<R extends Resource> implements MigrationResolver {
 	static private String[] SUFFIXES = { ".csv", ".CSV" };
+
+	protected final Map<String, List<String>> references = new HashMap<>();
 
 	@Override
 	public final Collection<ResolvedMigration> resolveMigrations(Context context) {
@@ -32,10 +37,13 @@ public abstract class CSVMigrationResolverBase<R extends Resource> implements Mi
 
 	private CSVResolvedMigrationBase<R> createMigration(Configuration cf, R res) {
 		final Pair<MigrationVersion, String> mi = MigrationInfoHelper
-				.extractVersionAndDescription(res.getFilename(), cf.getSqlMigrationPrefix(), cf.getSqlMigrationSeparator(), SUFFIXES, false);
+				.extractVersionAndDescription(res.getFilename(),
+						cf.getSqlMigrationPrefix(),
+						cf.getSqlMigrationSeparator(),
+						SUFFIXES, false);
 
 		final String right = mi.getRight();
-		final int sepIx = right.indexOf(cf.getSqlMigrationSeparator());
+		final int sepIx = right.indexOf("  ");
 		final String table;
 		final String desc;
 
@@ -44,7 +52,7 @@ public abstract class CSVMigrationResolverBase<R extends Resource> implements Mi
 			desc = "IMPORT TABLE " + table;
 		} else {
 			table = right.substring(0, sepIx).replace(' ', '_');
-			desc = right.substring(sepIx + 1);
+			desc = right.substring(sepIx + 2);
 		}
 
 		return newMigration(res, mi.getLeft(), table, desc);

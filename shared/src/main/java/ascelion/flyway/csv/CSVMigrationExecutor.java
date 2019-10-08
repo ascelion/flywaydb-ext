@@ -10,12 +10,12 @@ import org.flywaydb.core.api.executor.MigrationExecutor;
 
 @RequiredArgsConstructor
 public final class CSVMigrationExecutor implements MigrationExecutor {
-	private final CSVResolvedMigrationBase migration;
+	private final CSVResolvedMigrationBase<?> migration;
 
 	@Override
 	public void execute(Context context) throws SQLException {
 		try {
-			this.migration.statement(context.getConnection()).executeBatch();
+			this.migration.executBatch(context.getConnection());
 		} catch (final IOException e) {
 			throw new FlywayException(this.migration.getPhysicalLocation(), e);
 		}

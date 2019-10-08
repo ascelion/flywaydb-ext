@@ -4,13 +4,8 @@ apply plugin: 'java-library'
 dependencies {
 	api project( ':flywaydb-ext-shared' )
 	api configurations.flyway6
-
-	testImplementation 'junit:junit'
-	testImplementation 'org.hamcrest:hamcrest-core'
-	testImplementation 'org.hamcrest:hamcrest-library'
-
-	testRuntimeOnly 'com.h2database:h2'
-	testRuntimeOnly 'ch.qos.logback:logback-classic'
+	
+	testImplementation project( path: ':flywaydb-ext-shared', configuration: 'test' )
 }
 
 apply from: rootProject.file( 'publish.gradle' )
