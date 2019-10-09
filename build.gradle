@@ -18,16 +18,14 @@ scmVersion {
 group = 'ascelion.flywaydb'
 version = scmVersion.version
 
-task clean {
-}
-
 allprojects {
+	apply plugin: 'lifecycle-base'
 	apply plugin: 'eclipse'
 
 	ext {
 		publishName = rootProject.name
 
-		isSnapshot = version.endsWith( '-SNAPSHOT' )
+		isSnapshot = rootProject.version.endsWith( '-SNAPSHOT' )
 		isRelease  = !isSnapshot
 	}
 
@@ -65,18 +63,20 @@ subprojects { sub ->
 		archiveVersion = ''
 	}
 
-	tasks.withType( Jar ) {
-		manifest {
-			attributes(
-				'Built-By'       : 'ascelion',
-				'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
-				'Build-Branch'   : scmVersion.scmPosition.branch,
-				'Build-Commit'   : scmVersion.scmPosition.revision,
-				'Build-Revision' : "${scmVersion.version}-${scmVersion.scmPosition.shortRevision}",
-				'Created-By'     : "Gradle ${gradle.gradleVersion}",
-				'Build-Jdk'      : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
-				'Build-OS'       : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
-			)
+	if( isRelease ) {
+		tasks.withType( Jar ) {
+			manifest {
+				attributes(
+					'Built-By'       : 'ascelion',
+					'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+					'Build-Branch'   : scmVersion.scmPosition.branch,
+					'Build-Commit'   : scmVersion.scmPosition.revision,
+					'Build-Revision' : "${scmVersion.version}-${scmVersion.scmPosition.shortRevision}",
+					'Created-By'     : "Gradle ${gradle.gradleVersion}",
+					'Build-Jdk'      : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+					'Build-OS'       : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
+				)
+			}
 		}
 	}
 
@@ -111,8 +111,6 @@ subprojects { sub ->
 
 	apply from: rootProject.file('lombok.gradle')
 }
-
-apply plugin: 'maven-publish'
 
 apply from: 'bom.gradle'
 apply from: 'bintray.gradle'

@@ -1,5 +1,14 @@
 apply plugin: 'maven-publish'
 
+def doPublish  = project.hasProperty( 'doPublish' )
+
+def signKey    = "${publishName}.sign.keyId"
+def signSecret = "${publishName}.sign.keySecret"
+def bintrayUSR = "${publishName}.bintray.username"
+def bintrayPWD = "${publishName}.bintray.password"
+
+def gext       = gradle.ext
+
 publishing {
 	publications {
 		maven( MavenPublication ) {
@@ -34,5 +43,30 @@ publishing {
 				}
 			}
 		}
+	}
+
+	if( doPublish && gradle.hasProperty( bintrayUSR ) ) {
+		repositories {
+			maven {
+				name = 'jfrog'
+				url = "https://oss.jfrog.org/artifactory/oss-${isSnapshot ? 'snapshot' : 'release'}-local"
+
+				credentials {
+					username = gext[bintrayUSR]
+					password = gradle.decryptPassword( gext[bintrayPWD] )
+				}
+			}
+		}
+	}
+}
+
+if( gradle.hasProperty( signKey ) ) {
+	apply plugin: 'signing'
+
+	ext['signing.gnupg.keyName'] = gext[signKey]
+
+	signing {
+		useGpgCmd()
+		sign publishing.publications.maven
 	}
 }
