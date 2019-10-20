@@ -91,7 +91,7 @@ final class Graph<T, V extends Graph.Vertex<T>> {
 					.map(this::lookup)
 					.forEach(dep -> visit(dep, visited, stack, cycle));
 
-			stack.push(v);
+			stack.addLast(v);
 		}
 
 		cycle.pop();

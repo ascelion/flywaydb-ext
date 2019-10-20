@@ -33,13 +33,9 @@ allprojects {
 		jcenter()
 	}
 
-	task 'clean-ext'( type: Delete ) {
-		doLast {
-			delete 'bin', 'target'
-		}
+	clean {
+		delete 'bin', 'target', '*.log'
 	}
-
-	clean.dependsOn 'clean-ext'
 
 	defaultTasks 'clean', 'build'
 }

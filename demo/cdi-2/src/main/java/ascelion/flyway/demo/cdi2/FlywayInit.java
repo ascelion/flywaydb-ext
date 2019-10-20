@@ -28,7 +28,7 @@ public class FlywayInit {
 
 	@Produces
 	@Singleton
-	@FlywayMigration(name = "flyway-1", packages = "ascelion.flyway.demo.cdi2.db1")
+	@FlywayMigration(name = "flyway-1", packages = "ascelion.flyway.demo.cdi2.db1", dependsOn = "flyway-2")
 	Configuration configuration1() {
 		return Flyway.configure()
 				.dataSource("jdbc:h2:mem:db1", "sa", "sa")

@@ -1,26 +1,42 @@
 package ascelion.flyway.cdi;
 
+import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.function.BiFunction;
 
+import javax.annotation.Priority;
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
-import javax.enterprise.inject.spi.AfterTypeDiscovery;
+import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.ProcessBean;
+import javax.enterprise.inject.spi.ProcessProducer;
+import javax.enterprise.inject.spi.Producer;
+import javax.enterprise.util.AnnotationLiteral;
 
-import ascelion.cdi.literal.AnyLiteral;
 import ascelion.cdi.metadata.AnnotatedTypeModifier;
 import ascelion.flyway.api.FlywayMigration;
 
 import static java.lang.Thread.currentThread;
+import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 
+import lombok.RequiredArgsConstructor;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.api.resolver.MigrationResolver;
@@ -29,98 +45,218 @@ import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("unchecked")
 public final class FlywayCdiExtension implements Extension {
-	static private final Logger L = LoggerFactory.getLogger(FlywayCdiExtension.class);
+	static private final Logger LOG = LoggerFactory.getLogger(FlywayCdiExtension.class);
 
-	static Optional<FlywayMigration> flywayMigrationAnnotation(Bean<?> bean) {
-		return bean.getQualifiers().stream()
-				.filter(q -> q.annotationType() == FlywayMigration.class)
-				.map(FlywayMigration.class::cast)
-				.findAny();
-	}
+	private static <A extends Annotation> Optional<A> findMetaAnnotation(Class<A> type, Set<Annotation> visited, Collection<Annotation> annotations) {
+		for (final Annotation a : annotations) {
+			if (visited.add(a)) {
+				final Class<? extends Annotation> t = a.annotationType();
 
-	static class CfBeanInfo extends Graph.Vertex<String> {
-		static CfBeanInfo create(Bean<?> bean) {
-			return new CfBeanInfo(bean, flywayMigrationAnnotation(bean).get());
+				final Optional<A> result = Optional.ofNullable(t.getAnnotation(type))
+						.map(Optional::of)
+						.orElseGet(() -> findMetaAnnotation(type, visited, asList(t.getAnnotations())));
+
+				if (result.isPresent()) {
+					return result;
+				}
+			}
 		}
 
-		private final Bean<Configuration> bean;
-		private final FlywayMigration annotation;
+		return Optional.empty();
+	}
 
-		private CfBeanInfo(Bean<?> bean, FlywayMigration annotation) {
-			super(annotation.name(), annotation.dependsOn());
+	static <A extends Annotation> Optional<A> findMetaAnnotation(Class<A> type, Annotated annotated) {
+		return Optional.ofNullable(annotated.getAnnotation(type))
+				.map(Optional::of)
+				.orElseGet(() -> findMetaAnnotation(type, new HashSet<>(), annotated.getAnnotations()));
+	}
 
-			this.bean = (Bean<Configuration>) bean;
-			this.annotation = annotation;
+	static class NoFlywayMigration extends AnnotationLiteral<FlywayMigration> implements FlywayMigration {
+
+		@Override
+		public String name() {
+			return "";
+		}
+
+		@Override
+		public String[] packages() {
+			return new String[0];
+		}
+
+		@Override
+		public Class<?>[] packageClasses() {
+			return new Class[0];
+		}
+
+		@Override
+		public String[] dependsOn() {
+			return new String[0];
+		}
+	};
+
+	@RequiredArgsConstructor
+	static abstract class ConfigurationInstance implements Comparable<ConfigurationInstance> {
+		final FlywayMigration annotation;
+		final Integer priority;
+
+		abstract Configuration create(BeanManager bm);
+
+		abstract void destroy(Configuration instance);
+
+		@Override
+		public int compareTo(ConfigurationInstance that) {
+			if (this.priority != null && that.priority != null) {
+				return -Integer.compare(this.priority, that.priority);
+			}
+
+			if (this.priority == null) {
+				return +1;
+			}
+			if (that.priority == null) {
+				return -1;
+			}
+
+			return 0;
 		}
 	}
+
+	static class BeanInstance extends ConfigurationInstance {
+		final Bean<Configuration> bean;
+		CreationalContext<Configuration> context;
+
+		BeanInstance(Bean<Configuration> bean, FlywayMigration annotation, Integer priority) {
+			super(annotation, priority);
+
+			this.bean = bean;
+		}
+
+		@Override
+		Configuration create(BeanManager bm) {
+			this.context = bm.createCreationalContext(this.bean);
+
+			return this.bean.create(this.context);
+		}
+
+		@Override
+		void destroy(Configuration instance) {
+			this.bean.destroy(instance, this.context);
+		}
+	}
+
+	static class ProducerInstance extends ConfigurationInstance {
+		final Producer<Configuration> prod;
+
+		ProducerInstance(Producer<Configuration> prod, FlywayMigration annotation, Integer priority) {
+			super(annotation, priority);
+
+			this.prod = prod;
+		}
+
+		@Override
+		Configuration create(BeanManager bm) {
+			return this.prod.produce(bm.createCreationalContext(null));
+		}
+
+		@Override
+		void destroy(Configuration instance) {
+			this.prod.dispose(instance);
+		}
+	}
+
+	static final class ConfigurationInfo extends Graph.Vertex<String> {
+		final ConfigurationInstance instance;
+
+		ConfigurationInfo(ConfigurationInstance instance) {
+			super(instance.annotation.name(), instance.annotation.dependsOn());
+
+			this.instance = instance;
+		}
+	}
+
+	private final Map<String, SortedSet<ConfigurationInstance>> migrations = new HashMap<>();
 
 	void beforeBeanDiscovery(BeanManager bm, @Observes BeforeBeanDiscovery event) {
 		final AnnotatedType<FlywayMigration> at = bm.createAnnotatedType(FlywayMigration.class);
 		final AnnotatedTypeModifier<FlywayMigration> atm = AnnotatedTypeModifier.create(at);
 
-		L.info("Adding qualifier {}", FlywayMigration.class);
+		LOG.info("Adding qualifier {}", FlywayMigration.class);
 
 		event.addQualifier(atm.makeQualifier("value"));
-	}
 
-	void afterTypeDiscovery(BeanManager bm, @Observes AfterTypeDiscovery event) {
 		registerType(bm, event, Configuration.class);
 		registerType(bm, event, CdiMigrationResolver.class);
 	}
 
-	void afterDeploymentValidation(BeanManager bm, @Observes AfterDeploymentValidation event) {
-		final Set<Bean<?>> beans = bm.getBeans(Configuration.class, AnyLiteral.INSTANCE);
+	private void registerType(BeanManager bm, BeforeBeanDiscovery event, Class<?> cls) {
+		final String name = cls.getName();
+		final AnnotatedType<?> type = bm.createAnnotatedType(cls);
 
-		switch (beans.size()) {
-		case 0:
-			break;
-		case 1:
-			final Bean<Configuration> bean = (Bean<Configuration>) beans.iterator().next();
+		LOG.info("Adding type {}", name);
 
-			migrate(bm, bean, flywayMigrationAnnotation(bean).orElse(null));
-
-			break;
-
-		default:
-			final Graph<String, CfBeanInfo> graph = new Graph<>();
-
-			beans.stream()
-					.map(CfBeanInfo::create)
-					.forEach(graph::add);
-
-			graph.sort().forEach(v -> migrate(bm, v.bean, v.annotation));
-		}
+		event.addAnnotatedType(type, name);
 	}
 
-	private void migrate(BeanManager bm, Bean<Configuration> bean, FlywayMigration fm) {
-		final CdiInstance<Configuration> cfi = new CdiInstance<>(bm, bean);
-		final MigrationResolver res = new CdiMigrationResolver(bm, fm);
+	void processProducer(BeanManager bm, @Observes ProcessProducer<?, Configuration> event) {
+		processConfiguration(event.getAnnotatedMember(), (a, p) -> new ProducerInstance(event.getProducer(), a, p));
+	}
+
+	void processBean(BeanManager bm, @Observes ProcessBean<Configuration> event) {
+		processConfiguration(event.getAnnotated(), (a, p) -> new BeanInstance(event.getBean(), a, p));
+	}
+
+	private void processConfiguration(Annotated annotated, BiFunction<FlywayMigration, Integer, ConfigurationInstance> sup) {
+		final FlywayMigration annotation = findMetaAnnotation(FlywayMigration.class, annotated)
+				.orElseGet(NoFlywayMigration::new);
+		final boolean alternative = findMetaAnnotation(Alternative.class, annotated)
+				.map(a -> true)
+				.orElse(false);
+		final Integer priority = findMetaAnnotation(Priority.class, annotated)
+				.map(Priority::value)
+				.orElseGet(() -> alternative ? 0 : null);
+
+		LOG.info("Found migration {}, alternative: {}, priority: {}", annotation.name(), alternative, priority);
+
+		this.migrations
+				.computeIfAbsent(annotation.name(), k -> new TreeSet<>())
+				.add(sup.apply(annotation, priority));
+	}
+
+	void afterDeploymentValidation(BeanManager bm, @Observes AfterDeploymentValidation event) {
+		final Graph<String, ConfigurationInfo> graph = new Graph<>();
+
+		this.migrations.values().stream()
+				.map(s -> s.first())
+				.forEach(i -> {
+					graph.add(new ConfigurationInfo(i));
+				});
+
+		graph
+				.sort()
+				.forEach(mi -> migrate(bm, mi));
+	}
+
+	private void migrate(BeanManager bm, ConfigurationInfo ci) {
+		final MigrationResolver res = new CdiMigrationResolver(bm, ci.instance.annotation);
+		final Configuration cfg = ci.instance.create(bm);
 
 		try {
-			final List<MigrationResolver> resolvers = stream(cfi.get().getResolvers()).collect(toList());
+			final List<MigrationResolver> resolvers = stream(cfg.getResolvers()).collect(toList());
 
 			resolvers.add(res);
 
 			addCSV(resolvers);
 
-			final Configuration cfg = Flyway.configure(currentThread().getContextClassLoader())
-					.configuration(cfi.get())
+			final Configuration newCfg = Flyway.configure(currentThread().getContextClassLoader())
+					.configuration(cfg)
 					.resolvers(resolvers.toArray(new MigrationResolver[0]));
-			final Flyway fw = new Flyway(cfg);
+			final Flyway fw = new Flyway(newCfg);
+
+			LOG.info("Running migration {}", ci.name);
 
 			fw.migrate();
 		} finally {
-			cfi.destroy();
+			ci.instance.destroy(cfg);
 		}
-	}
-
-	private void registerType(BeanManager bm, AfterTypeDiscovery event, Class<?> cls) {
-		final String name = cls.getName();
-		final AnnotatedType<?> type = bm.createAnnotatedType(cls);
-
-		L.info("Adding type {}", name);
-
-		event.addAnnotatedType(type, name);
 	}
 
 	private void addCSV(final List<MigrationResolver> resolvers) {

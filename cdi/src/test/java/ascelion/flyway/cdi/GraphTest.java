@@ -5,8 +5,8 @@ import java.util.List;
 import ascelion.flyway.cdi.Graph.Vertex;
 
 import static java.util.stream.Collectors.toList;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
@@ -53,9 +53,9 @@ public class GraphTest {
 		final Vertex<String> v2 = new Graph.Vertex<>("b", "c");
 		final Vertex<String> v3 = new Graph.Vertex<>("c");
 
-		graph.add(v3);
-		graph.add(v2);
 		graph.add(v1);
+		graph.add(v2);
+		graph.add(v3);
 
 		final List<Vertex<String>> sorted = graph.sort().stream().collect(toList());
 
@@ -63,7 +63,7 @@ public class GraphTest {
 		final int x2 = sorted.indexOf(v2);
 		final int x3 = sorted.indexOf(v3);
 
-		assertThat(x1, lessThan(x2));
-		assertThat(x2, lessThan(x3));
+		assertThat(x1, greaterThan(x2));
+		assertThat(x2, greaterThan(x3));
 	}
 }
