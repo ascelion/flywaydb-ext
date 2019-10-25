@@ -177,11 +177,10 @@ public final class FlywayCdiExtension implements Extension {
 
 	void beforeBeanDiscovery(BeanManager bm, @Observes BeforeBeanDiscovery event) {
 		final AnnotatedType<FlywayMigration> at = bm.createAnnotatedType(FlywayMigration.class);
-		final AnnotatedTypeModifier<FlywayMigration> atm = AnnotatedTypeModifier.create(at);
 
 		LOG.info("Adding qualifier {}", FlywayMigration.class);
 
-		event.addQualifier(atm.makeQualifier("value"));
+		event.addQualifier(AnnotatedTypeModifier.makeQualifier(at, "value"));
 
 		registerType(bm, event, Configuration.class);
 		registerType(bm, event, CdiMigrationResolver.class);

@@ -20,3 +20,5 @@ def renameChildren( ProjectDescriptor desc ) {
 }
 
 renameChildren rootProject
+
+apply from: 'composite.gradle'
