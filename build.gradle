@@ -24,6 +24,8 @@ allprojects {
 
 	ext {
 		publishName = rootProject.name
+		publishBase = 'https://github.com/ascelion'
+		publishRepo = 'git@github.com:ascelion'
 
 		isSnapshot = rootProject.version.endsWith( '-SNAPSHOT' )
 		isRelease  = !isSnapshot
@@ -47,35 +49,17 @@ subprojects { sub ->
 
 	apply plugin: 'java'
 
-	sourceCompatibility = '1.8'
-	targetCompatibility = '1.8'
+	sourceCompatibility = '8'
+	targetCompatibility = '8'
 
 	sourceSets {
 		all {
 			output.resourcesDir = output.classesDirs[0]
 		}
 	}
-
 	tasks.withType( AbstractArchiveTask ) {
 		duplicatesStrategy = 'exclude'
 		archiveVersion = ''
-	}
-
-	if( isRelease ) {
-		tasks.withType( Jar ) {
-			manifest {
-				attributes(
-						'Built-By'       : 'ascelion',
-						'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
-						'Build-Branch'   : scmVersion.scmPosition.branch,
-						'Build-Commit'   : scmVersion.scmPosition.revision,
-						'Build-Revision' : "${scmVersion.version}-${scmVersion.scmPosition.shortRevision}",
-						'Created-By'     : "Gradle ${gradle.gradleVersion}",
-						'Build-Jdk'      : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
-						'Build-OS'       : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
-						)
-			}
-		}
 	}
 
 	configurations {
@@ -110,5 +94,5 @@ subprojects { sub ->
 	apply from: rootProject.file('lombok.gradle')
 }
 
-apply from: 'bom.gradle'
-apply from: 'bintray.gradle'
+apply from: 'publish.gradle'
+
