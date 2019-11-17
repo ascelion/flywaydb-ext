@@ -1,7 +1,7 @@
 apply plugin: 'maven-publish'
 
-def forPublic  = project.hasProperty( 'forPublic' ) && 
-	(project.getProperty( 'forPublic' ) == '' || project.getProperty( 'forPublic' ) )
+def forPublic  = project.hasProperty( 'forPublic' ) &&
+		(project.getProperty( 'forPublic' ) == '' || project.getProperty( 'forPublic' ) )
 
 def isSnapshot = rootProject.version.endsWith( '-SNAPSHOT' )
 def isRelease  = !isSnapshot
@@ -37,7 +37,7 @@ plugins.withType( JavaPlugin ) {
 
 			String javaApi = "https://docs.oracle.com/javase/${source.replace('1.', '')}/docs/api"
 
-			links += [ javaApi ]
+			links += [javaApi]
 		}
 	}
 }
@@ -64,7 +64,7 @@ publishing {
 		maven( MavenPublication ) {
 			plugins.withType( JavaPlugin ) {
 				from components.java
-	
+
 				artifact sourcesJar
 				artifact javadocJar
 			}
@@ -104,21 +104,24 @@ publishing {
 						}
 					} else {
 						def dm = xml.dependencyManagement.dependencies
-						def dd = xml.dependencies
 
-						dd.'*'
-								.findAll { node -> node.version.text() == '' }
-								.each { node ->
-									def dep =  dm.'*'.find {
-										node.groupId.text() == it.groupId.text() &&
-												node.artifactId.text() == it.artifactId.text() &&
-												node.classifier.text() == it.classifier.text()
+						if( dm.size() > 0 ) {
+							def dd = xml.dependencies
+
+							dd.'*'
+									.findAll { node -> node.version.text() == '' }
+									.each { node ->
+										def dep =  dm.'*'.find {
+											node.groupId.text() == it.groupId.text() &&
+													node.artifactId.text() == it.artifactId.text() &&
+													node.classifier.text() == it.classifier.text()
+										}
+
+										node.appendNode( 'version', dep.version.text() )
 									}
 
-									node.appendNode( 'version', dep.version.text() )
-								}
-
-						xml.remove xml.dependencyManagement
+							xml.remove xml.dependencyManagement
+						}
 					}
 				}
 			}
