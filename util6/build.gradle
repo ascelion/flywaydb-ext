@@ -2,10 +2,12 @@
 apply plugin: 'java-library'
 
 dependencies {
-	api project( ':flywaydb-ext-shared' )
-	api configurations.flyway6
-	
-	testImplementation project( path: ':flywaydb-ext-shared', configuration: 'test' )
+	api project( ':shared' )
+
+	compileOnly configurations.flyway61
+
+	testImplementation project( path: ':shared', configuration: 'test' )
+	testImplementation configurations.flyway60
 }
 
 apply from: rootProject.file( 'publish.gradle' )

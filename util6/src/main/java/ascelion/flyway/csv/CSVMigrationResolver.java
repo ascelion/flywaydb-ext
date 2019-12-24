@@ -2,20 +2,17 @@ package ascelion.flyway.csv;
 
 import java.util.Collection;
 
-import static java.util.Arrays.asList;
-
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.internal.resource.LoadableResource;
-import org.flywaydb.core.internal.scanner.Scanner;
 
 public final class CSVMigrationResolver extends CSVMigrationResolverBase<LoadableResource> {
+	private final ScannerProvider sp = ScannerProvider.resolveProvider();
 
 	@Override
 	protected Collection<LoadableResource> getResources(Configuration cf, String... suffixes) {
-		final Scanner<?> scn = new Scanner<>(Void.class, asList(cf.getLocations()), cf.getClassLoader(), cf.getEncoding());
-
-		return scn.getResources(cf.getSqlMigrationPrefix(), suffixes);
+		return this.sp.create(cf, suffixes)
+				.getResources(cf.getSqlMigrationPrefix(), suffixes);
 	}
 
 	@Override

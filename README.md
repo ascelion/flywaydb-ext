@@ -2,7 +2,7 @@
 
 Features:
 
-- Supports both version 5 and 6
+- Supports versions 5.2 and 6.0 and 6.1
 - CDI extension
 - CSV migration support
 - ... more to come
@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-	implementation platform( 'ascelion.flywaydb:flywaydb-ext:1.0.0' )
+	implementation platform( 'ascelion.flywaydb:flywaydb-ext:1.0.3' )
 }
 
 ```
@@ -30,7 +30,7 @@ dependencies {
 		<dependency>
 			<groupId>ascelion.flywaydb</groupId>
 			<artifactId>flywaydb-ext</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.3</version>
 			<type>pom</type>
 			<scope>import</scope>
 	</dependencies>
@@ -48,9 +48,16 @@ The name of the table to import into is taken from the description; the first se
 
 You must register the class CSVMigrationResolver to the Flyway configuration.
 
-Dependencies:
-- __ascelion.flywaydb:flywaydb-ext-util5__ for version 5
-- __ascelion.flywaydb:flywaydb-ext-util6__ for version 6.
+### Dependencies ###
+
+| Flyway Version | Extension Dependencies
+| --- | ---
+| 5.2.x | `ascelion.flywaydb:flywaydb-ext-util5:1.0.x`
+|       | `org.flywaydb:flyway-core:5.2.x`
+| 6.0.x | `ascelion.flywaydb:flywaydb-ext-util6:1.0.x`
+|       | `org.flywaydb:flyway-core:6.0.x`
+| 6.1.x | `ascelion.flywaydb:flywaydb-ext-util6:1.0.x`
+|       | `org.flywaydb:flyway-core:6.1.x`
 
 ### Foreign key support ###
 
@@ -86,5 +93,3 @@ The CSVMigrationResolver is registered automatically if found on classpath.
 
 Dependencies:
 - __ascelion.flywaydb:flywaydb-ext-cdi__ (for both CDI-1 and CDI-2)
-- __org.flywaydb:flyway-core:5.+__ or __ascelion.flywaydb:flywaydb-ext-util5__ for version 5
-- __org.flywaydb:flyway-core:6.+__ or __ascelion.flywaydb:flywaydb-ext-util5__ for version 6

@@ -1,16 +1,19 @@
-configurations {
-	lombok
 
-	all {
-		if( name.endsWith( 'ompileOnly') ) {
-			extendsFrom lombok
-		}
-		if( name.endsWith( 'nnotationProcessor') ) {
-			extendsFrom lombok
+subprojects {
+	plugins.withType( JavaPlugin ) {
+		configurations {
+			all {
+				if( name.endsWith( 'ompileOnly') ) {
+					dependencies {
+						add name, 'org.projectlombok:lombok:1.18.+'
+					}
+				}
+				if( name.endsWith( 'nnotationProcessor') ) {
+					dependencies {
+						add name, 'org.projectlombok:lombok:1.18.+'
+					}
+				}
+			}
 		}
 	}
-}
-
-dependencies {
-	lombok 'org.projectlombok:lombok:1.18.8'
 }

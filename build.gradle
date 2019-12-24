@@ -4,8 +4,8 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath 'pl.allegro.tech.build:axion-release-plugin:1.10.+'
-		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
+		classpath 'pl.allegro.tech.build:axion-release-plugin:1.10.2'
+		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
 	}
 }
 
@@ -64,12 +64,14 @@ subprojects { sub ->
 
 	configurations {
 		flyway5
-		flyway6
+		flyway60
+		flyway61
 	}
 
 	dependencies {
 		flyway5 'org.flywaydb:flyway-core:5.2.4'
-		flyway6 'org.flywaydb:flyway-core:6.0.3'
+		flyway60 'org.flywaydb:flyway-core:6.0.8'
+		flyway61 'org.flywaydb:flyway-core:6.1.3'
 
 		constraints {
 			implementation 'javax.enterprise:cdi-api:1.2'
@@ -91,8 +93,10 @@ subprojects { sub ->
 		testImplementation 'org.hamcrest:hamcrest-library:1.3'
 	}
 
-	apply from: rootProject.file('lombok.gradle')
+	eclipse.project.name = "$rootProject.name${project.path.replace(':', '-')}"
+	eclipse.classpath.downloadSources = true
 }
 
+apply from: 'lombok.gradle'
 apply from: 'publish.gradle'
 

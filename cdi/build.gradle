@@ -1,9 +1,8 @@
-
 apply plugin: 'java-library'
 
 dependencies {
-	api project( ':flywaydb-ext-api' )
-	api project( ':flywaydb-ext-shared' )
+	api project( ':api' )
+	api project( ':shared' )
 
 	implementation 'ascelion.public:cdi-utils'
 

@@ -3,22 +3,18 @@ rootProject.name = 'flywaydb-ext'
 
 include ':api'
 include ':cdi'
-include ':demo:cdi-1'
-include ':demo:cdi-2'
+include ':demo:cdi1'
+include ':demo:cdi1-fw5'
+include ':demo:cdi1-fw60'
+include ':demo:cdi1-fw61'
+include ':demo:cdi2'
+include ':demo:cdi2-fw5'
+include ':demo:cdi2-fw60'
+include ':demo:cdi2-fw61'
 //include ':demo:spring4'
 //include ':demo:spring5'
 include ':shared'
 include ':util5'
 include ':util6'
 
-def renameChildren( ProjectDescriptor desc ) {
-	desc.children.each { child ->
-		child.name = "${rootProject.name}-${child.path.substring(1).replace(':', '-')}"
-
-		renameChildren child
-	}
-}
-
-renameChildren rootProject
-
-apply from: 'composite.gradle'
+//apply from: 'composite.gradle'
