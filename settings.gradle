@@ -1,5 +1,5 @@
 
-rootProject.name = 'flywaydb-ext'
+rootProject.name = 'flyway-ext'
 
 include ':api'
 include ':cdi'
@@ -11,8 +11,8 @@ include ':demo:cdi2'
 include ':demo:cdi2-fw5'
 include ':demo:cdi2-fw60'
 include ':demo:cdi2-fw61'
-//include ':demo:spring4'
-//include ':demo:spring5'
+include ':demo:sb2-fw5'
+include ':sb2'
 include ':shared'
 include ':util5'
 include ':util6'

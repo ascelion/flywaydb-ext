@@ -11,7 +11,7 @@ import org.flywaydb.core.api.executor.MigrationExecutor;
 import org.flywaydb.core.api.migration.JavaMigration;
 
 @RequiredArgsConstructor
-public final class JavaMigrationExecutor implements MigrationExecutor {
+final class JavaMigrationExecutor implements MigrationExecutor {
 
 	private final JavaMigration migration;
 

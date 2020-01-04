@@ -4,14 +4,10 @@ subprojects {
 		configurations {
 			all {
 				if( name.endsWith( 'ompileOnly') ) {
-					dependencies {
-						add name, 'org.projectlombok:lombok:1.18.+'
-					}
+					project.dependencies.add name, 'org.projectlombok:lombok:1.18.+'
 				}
 				if( name.endsWith( 'nnotationProcessor') ) {
-					dependencies {
-						add name, 'org.projectlombok:lombok:1.18.+'
-					}
+					project.dependencies.add name, 'org.projectlombok:lombok:1.18.+'
 				}
 			}
 		}

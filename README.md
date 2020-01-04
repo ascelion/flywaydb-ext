@@ -5,6 +5,7 @@ Features:
 - Supports versions 5.2 and 6.0 and 6.1
 - CDI extension
 - CSV migration support
+- Spring Boot 2 support
 - ... more to come
 
 ## General Usage ##
@@ -17,7 +18,7 @@ repositories {
 }
 
 dependencies {
-	implementation platform( 'ascelion.flywaydb:flywaydb-ext:1.0.3' )
+	implementation platform( 'ascelion.flywaydb:flyway-ext:1.0.3' )
 }
 
 ```
@@ -29,7 +30,7 @@ dependencies {
 	<dependencies>
 		<dependency>
 			<groupId>ascelion.flywaydb</groupId>
-			<artifactId>flywaydb-ext</artifactId>
+			<artifactId>flyway-ext</artifactId>
 			<version>1.0.3</version>
 			<type>pom</type>
 			<scope>import</scope>
@@ -52,11 +53,11 @@ You must register the class CSVMigrationResolver to the Flyway configuration.
 
 | Flyway Version | Extension Dependencies
 | --- | ---
-| 5.2.x | `ascelion.flywaydb:flywaydb-ext-util5:1.0.x`
+| 5.2.x | `ascelion.flywaydb:flyway-ext-util5:1.0.x`
 |       | `org.flywaydb:flyway-core:5.2.x`
-| 6.0.x | `ascelion.flywaydb:flywaydb-ext-util6:1.0.x`
+| 6.0.x | `ascelion.flywaydb:flyway-ext-util6:1.0.x`
 |       | `org.flywaydb:flyway-core:6.0.x`
-| 6.1.x | `ascelion.flywaydb:flywaydb-ext-util6:1.0.x`
+| 6.1.x | `ascelion.flywaydb:flyway-ext-util6:1.0.x`
 |       | `org.flywaydb:flyway-core:6.1.x`
 
 ### Foreign key support ###
@@ -87,9 +88,23 @@ Note that this feature works for scripts that are imported **in the same migrati
 
 Runs Flyway migrations on startup; multiple migrations are supported.
 
-You have to create producers for each migration configuration and optionally use the qualifier @FlywayMigration for each of them.
+You have to create producers for each migration configuration and optionally use the qualifier @FlywayMigration for each producer.
 
-The CSVMigrationResolver is registered automatically if found on classpath.
+The CSVMigrationResolver component is registered automatically if found on classpath.
+
+Flyway directly instantiates Java based migrations that are found in the locations defined in the Flyway configuration. This extension allows to
+create Java migrations as CDI components. The location of such component must not overlap with any of the locations provided by Flyway configuration.
 
 Dependencies:
-- __ascelion.flywaydb:flywaydb-ext-cdi__ (for both CDI-1 and CDI-2)
+- __ascelion.flywaydb:flyway-ext-cdi__ (for both CDI-1 and CDI-2)
+
+
+## Spring Boot 2 Support ##
+
+The CSVMigrationResolver component is registered automatically.
+
+Flyway directly instantiates Java based migrations that are found in the locations defined in the Flyway configuration. This extension allows to
+create Java migrations as Spring components. The location of such component must not overlap with any of the locations provided by Flyway configuration.
+
+Dependencies:
+- __ascelion.flywaydb:flyway-ext-sb2__

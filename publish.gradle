@@ -134,9 +134,11 @@ publishing {
 	}
 
 	if( isExtended ) {
-		repositories {
-			if( gradle.isPropertyPresent( 'ascelion.deploy.url' ) ) {
-				maven {
+		if( gradle.isPropertyPresent( 'ascelion.deploy.url' ) ) {
+			def ascelion = repositories.find { it.name == 'ascelion' }
+
+			if( ascelion == null ) {
+				repositories.maven {
 					name = 'ascelion'
 					url = "${gradle.mavenDecryptProperty( 'ascelion.deploy.url' )}-${isSnapshot ? 'snapshots' : 'releases'}"
 
@@ -146,15 +148,16 @@ publishing {
 					}
 				}
 			}
-			if( forPublic && gradle.isPropertyPresent( bintrayUSR ) ) {
-				maven {
-					name = 'jfrog'
-					url = "https://oss.jfrog.org/artifactory/oss-${isSnapshot ? 'snapshot' : 'release'}-local"
+		}
 
-					credentials {
-						username = gradle.mavenDecryptProperty( bintrayUSR )
-						password = gradle.mavenDecryptProperty( bintrayPWD )
-					}
+		if( forPublic && gradle.isPropertyPresent( bintrayUSR ) ) {
+			repositories.maven {
+				name = 'jfrog'
+				url = "https://oss.jfrog.org/artifactory/oss-${isSnapshot ? 'snapshot' : 'release'}-local"
+
+				credentials {
+					username = gradle.mavenDecryptProperty( bintrayUSR )
+					password = gradle.mavenDecryptProperty( bintrayPWD )
 				}
 			}
 		}

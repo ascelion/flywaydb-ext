@@ -7,14 +7,13 @@ import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
 import javax.interceptor.Interceptor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
+@Slf4j
 public class Demo {
-	static private final Logger L = LoggerFactory.getLogger(Demo.class);
 
 	public static void main(String[] args) {
 //		stream(System.getProperty("java.class.path").split(":"))
@@ -30,7 +29,7 @@ public class Demo {
 	}
 
 	void run() {
-		L.info("Running demo");
+		log.info("Running demo");
 	}
 
 	void init(
@@ -41,7 +40,7 @@ public class Demo {
 			Object unused) {
 	//@formatter:on
 
-		L.info("Starting demo");
+		log.info("Starting demo");
 	}
 
 	void done(
@@ -51,6 +50,6 @@ public class Demo {
 			@Destroyed(ApplicationScoped.class)
 			Object unused) {
 		//@formatter:on
-		L.info("Finishing demo");
+		log.info("Finishing demo");
 	}
 }
