@@ -1,27 +1,12 @@
 apply plugin: 'maven-publish'
 
-def forPublic  = project.hasProperty( 'forPublic' ) &&
-		(project.getProperty( 'forPublic' ) == '' || project.getProperty( 'forPublic' ) )
-
 def isSnapshot = rootProject.version.endsWith( '-SNAPSHOT' )
 def isRelease  = !isSnapshot
-def isExtended = gradle.metaClass.respondsTo( gradle, 'isPropertyPresent' )
-
-def signKey    = "${publishName}.sign.keyId"
-def signSecret = "${publishName}.sign.keySecret"
-def bintrayUSR = "${publishName}.bintray.username"
-def bintrayPWD = "${publishName}.bintray.password"
 
 plugins.withType( JavaPlugin ) {
-	task sourcesJar(type: Jar) {
-		from sourceSets.main.allJava
-
-		classifier = 'sources'
-	}
-	task javadocJar(type: Jar) {
-		from javadoc
-
-		classifier = 'javadoc'
+	java {
+		withJavadocJar()
+		withSourcesJar()
 	}
 	javadoc {
 		failOnError = true
@@ -63,9 +48,6 @@ publishing {
 
 			plugins.withType( JavaPlugin ) {
 				from components.java
-
-				artifact sourcesJar
-				artifact javadocJar
 			}
 			plugins.withType( DistributionPlugin ) {
 				artifact distTar
@@ -132,24 +114,20 @@ publishing {
 			}
 		}
 	}
+}
 
-	if( isExtended ) {
-		if( gradle.isPropertyPresent( 'ascelion.deploy.url' ) ) {
-			def ascelion = repositories.find { it.name == 'ascelion' }
+def isExtended = gradle.metaClass.respondsTo( gradle, 'isPropertyPresent' )
 
-			if( ascelion == null ) {
-				repositories.maven {
-					name = 'ascelion'
-					url = "${gradle.mavenDecryptProperty( 'ascelion.deploy.url' )}-${isSnapshot ? 'snapshots' : 'releases'}"
+if( isExtended ) {
+	def forPublic  = project.hasProperty( 'forPublic' ) &&
+					(project.getProperty( 'forPublic' ) == '' || project.getProperty( 'forPublic' ) )
 
-					credentials {
-						username = gradle.mavenDecryptProperty( 'ascelion.deploy.username' )
-						password = gradle.mavenDecryptProperty( 'ascelion.deploy.password' )
-					}
-				}
-			}
-		}
+	def signKey    = "${publishName}.sign.keyId"
+	def signSecret = "${publishName}.sign.keySecret"
+	def bintrayUSR = "${publishName}.bintray.username"
+	def bintrayPWD = "${publishName}.bintray.password"
 
+	publishing {
 		if( forPublic && gradle.isPropertyPresent( bintrayUSR ) ) {
 			repositories.maven {
 				name = 'jfrog'
@@ -162,14 +140,8 @@ publishing {
 			}
 		}
 	}
-}
 
-publish {
-	dependsOn publishToMavenLocal
-}
-
-if( isExtended ) {
-	if( gradle.isPropertyPresent( signKey ) ) {
+	if( isRelease && gradle.isPropertyPresent( signKey ) ) {
 		apply plugin: 'signing'
 
 		ext['signing.gnupg.keyName'] = gradle.mavenDecryptProperty( signKey )

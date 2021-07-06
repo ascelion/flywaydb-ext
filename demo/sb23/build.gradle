@@ -1,0 +1,13 @@
+apply plugin: 'application'
+
+mainClassName = 'ascelion.flyway.demo.sb2.Demo'
+
+dependencies {
+	implementation project( ':demo:sb2-main' )
+
+	implementation project( ':util6' )
+	implementation configurations.flyway61
+
+	implementation "org.springframework.boot:spring-boot-starter:$springBoot23"
+	implementation "org.springframework.boot:spring-boot-starter-jdbc:$springBoot23"
+}

@@ -1,3 +1,4 @@
+
 package ascelion.flyway.csv;
 
 import java.util.Collection;
@@ -17,6 +18,7 @@ import org.flywaydb.core.internal.resource.Resource;
 import org.flywaydb.core.internal.util.Pair;
 
 public abstract class CSVMigrationResolverBase<R extends Resource> implements MigrationResolver {
+
 	static private String[] SUFFIXES = { ".csv", ".CSV" };
 
 	protected final Map<String, List<String>> references = new HashMap<>();
@@ -33,7 +35,7 @@ public abstract class CSVMigrationResolverBase<R extends Resource> implements Mi
 
 	protected abstract Collection<R> getResources(Configuration cf, String... suffixes);
 
-	protected abstract CSVResolvedMigrationBase<R> newMigration(R res, MigrationVersion version, String table, String desc);
+	protected abstract CSVResolvedMigrationBase<R> newMigration(Configuration cf, R res, MigrationVersion version, String table, String desc);
 
 	private CSVResolvedMigrationBase<R> createMigration(Configuration cf, R res) {
 		final Pair<MigrationVersion, String> mi = MigrationInfoHelper
@@ -55,7 +57,7 @@ public abstract class CSVMigrationResolverBase<R extends Resource> implements Mi
 			desc = right.substring(sepIx + 2);
 		}
 
-		return newMigration(res, mi.getLeft(), table, desc);
+		return newMigration(cf, res, mi.getLeft(), table, desc);
 	}
 
 }

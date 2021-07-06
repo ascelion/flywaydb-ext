@@ -2,7 +2,7 @@
 apply plugin: 'java-library'
 
 dependencies {
-	compileOnly configurations.flyway5
+	compileOnly configurations.flyway52
 }
 
 apply from: rootProject.file( 'publish.gradle' )

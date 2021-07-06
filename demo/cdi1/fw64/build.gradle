@@ -1,0 +1,10 @@
+apply plugin: 'application'
+
+mainClassName = 'ascelion.flyway.demo.cdi1.Demo'
+
+dependencies {
+	implementation project( ':demo:cdi1:main')
+	implementation project( ':util64' )
+
+	runtimeOnly configurations.flyway64
+}

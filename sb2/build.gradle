@@ -1,13 +1,12 @@
-
 apply plugin: 'java-library'
 
 dependencies {
-	api configurations.flyway5
+	compileOnly configurations.flyway52
+	compileOnly project( ':util52' )
 
-	implementation project( ':util5' )
 	implementation 'org.slf4j:slf4j-api'
 
-	compileOnly 'org.springframework.boot:spring-boot-autoconfigure'
+	compileOnly "org.springframework.boot:spring-boot-autoconfigure:$springBoot21"
 }
 
 apply from: rootProject.file( 'publish.gradle' )

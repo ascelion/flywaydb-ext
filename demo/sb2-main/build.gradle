@@ -1,0 +1,10 @@
+
+apply plugin: 'java-library'
+
+dependencies {
+	implementation project( ':sb2' )
+
+	compileOnly configurations.flyway52
+	compileOnly "org.springframework.boot:spring-boot-starter:$springBoot21"
+	runtimeOnly 'com.h2database:h2'
+}

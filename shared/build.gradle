@@ -2,7 +2,7 @@
 apply plugin: 'java-library'
 
 dependencies {
-	compileOnly configurations.flyway5
+	compileOnly configurations.flyway52
 }
 
 dependencies {
@@ -27,7 +27,7 @@ dependencies {
 	testRuntimeOnly 'com.h2database:h2'
 	testRuntimeOnly 'ch.qos.logback:logback-classic'
 
-	testCompileOnly configurations.flyway5
+	testCompileOnly configurations.flyway52
 
 	test sourceSets.test.output
 }

@@ -6,7 +6,6 @@ buildscript {
 	dependencies {
 		classpath 'pl.allegro.tech.build:axion-release-plugin:1.10.2'
 		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
-		classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
 	}
 }
 
@@ -27,9 +26,6 @@ allprojects {
 		publishName = 'flywaydb-ext'
 		publishBase = 'https://github.com/ascelion'
 		publishRepo = 'git@github.com:ascelion'
-
-		isSnapshot = rootProject.version.endsWith( '-SNAPSHOT' )
-		isRelease  = !isSnapshot
 	}
 
 	repositories {
@@ -41,7 +37,7 @@ allprojects {
 		delete 'bin', 'target', '*.log'
 	}
 
-	defaultTasks 'clean', 'build'
+	defaultTasks 'build'
 }
 
 subprojects { sub ->
@@ -62,19 +58,32 @@ subprojects { sub ->
 		duplicatesStrategy = 'exclude'
 		archiveVersion = ''
 	}
+	plugins.withType( ApplicationPlugin ) {
+		check.dependsOn run
+		
+		run {
+			systemProperty 'force', UUID.randomUUID()
+		}
 
+		distTar.enabled = false
+		distZip.enabled = false
+	}
 	configurations {
-		flyway5
+		flyway52
 		flyway60
 		flyway61
+		flyway62
+		flyway63
+		flyway64
 	}
 
 	dependencies {
-		flyway5 'org.flywaydb:flyway-core:5.2.4'
+		flyway52 'org.flywaydb:flyway-core:5.2.4'
 		flyway60 'org.flywaydb:flyway-core:6.0.8'
 		flyway61 'org.flywaydb:flyway-core:6.1.3'
-
-		implementation platform( "org.springframework.boot:spring-boot-dependencies:$springBootVersion" )
+		flyway62 'org.flywaydb:flyway-core:6.2.4'
+		flyway63 'org.flywaydb:flyway-core:6.3.3'
+		flyway64 'org.flywaydb:flyway-core:6.4.4'
 
 		constraints {
 			implementation 'javax.enterprise:cdi-api:1.2'
@@ -88,7 +97,7 @@ subprojects { sub ->
 			implementation 'com.opencsv:opencsv:4.6'
 			implementation 'com.h2database:h2:1.4.199'
 
-			implementation 'ascelion.public:cdi-utils:0.2.0'
+			implementation 'ascelion.public:cdi-utils:0.2.1-SNAPSHOT'
 		}
 
 		testImplementation 'junit:junit:4.12'

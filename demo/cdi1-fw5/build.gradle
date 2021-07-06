@@ -1,8 +1,0 @@
-apply plugin: 'application'
-
-mainClassName = 'ascelion.flyway.demo.cdi1.Demo'
-
-dependencies {
-	implementation project( ':demo:cdi1')
-	implementation project( ':util5' )
-}

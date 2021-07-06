@@ -6,7 +6,7 @@ dependencies {
 
 	implementation 'ascelion.public:cdi-utils'
 
-	compileOnly configurations.flyway5
+	compileOnly configurations.flyway52
 
 	implementation 'org.slf4j:slf4j-api'
 
